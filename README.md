@@ -98,8 +98,12 @@ significant qtl were identified by Helen Cockerton and were copied to the follow
 ```bash
 mkdir -p significant_qtl
 # cat significant_qtl/All_Significant_QTLhkBF.csv | sed "s/,/\t/g" > significant_qtl/All_Significant_QTLhkBF.tsv
-cat significant_qtl/all_for_Andy.csv | sed "s/,/\t/g" > significant_qtl/All_Significant_QTLhkBF.tsv
-cat significant_qtl/All_Significant_QTLhkBF.tsv | cut -f5 | sed 's/\./-/g' | tail -n+2 | sed 's/"//g' | sort | uniq > significant_qtl/All_Significant_QTLhkBF_headers.txt
+
+# cat significant_qtl/all_for_Andy.csv | sed "s/,/\t/g" > significant_qtl/All_Significant_QTLhkBF.tsv
+# cat significant_qtl/All_Significant_QTLhkBF.tsv | cut -f5 | sed 's/\./-/g' | tail -n+2 | sed 's/"//g' | sort | uniq > significant_qtl/All_Significant_QTLhkBF_headers.txt
+
+cat significant_qtl/all_for_and_two.csv | sed "s/,/\t/g" > significant_qtl/all_significant_revision.tsv
+cat significant_qtl/all_significant_revision.tsv | cut -f6 | sed 's/\./-/g' | tail -n+2 | sed 's/"//g' | sort | uniq > significant_qtl/all_significant_revision_headers.txt
 ```
 
 ## 1.2 Identify genes near qtl
@@ -107,17 +111,20 @@ cat significant_qtl/All_Significant_QTLhkBF.tsv | cut -f5 | sed 's/\./-/g' | tai
 ```bash
 mkdir -p significant_qtl/F.vesca/Hawaii4
 
-cat snp_locations/F.vesca/Hawaii4/snp_posns_vesca_v4.gff | grep -w -f significant_qtl/All_Significant_QTLhkBF_headers.txt > significant_qtl/F.vesca/Hawaii4/snp_posns_vesca_v4.gff
+# cat snp_locations/F.vesca/Hawaii4/snp_posns_vesca_v4.gff | grep -w -f significant_qtl/All_Significant_QTLhkBF_headers.txt > significant_qtl/F.vesca/Hawaii4/snp_posns_vesca_v4.gff
+cat snp_locations/F.vesca/Hawaii4/snp_posns_vesca_v4.gff | grep -w -f significant_qtl/all_significant_revision_headers.txt > significant_qtl/F.vesca/Hawaii4/snp_posns_revision_vesca_v4.gff
 
-bedtools intersect -wao -a significant_qtl/F.vesca/Hawaii4/snp_posns_vesca_v4.gff -b assembly/external/F.vesca/Hawaii4/v4/Fragaria_vesca_v4.0.a1.transcripts.gff3 | grep -w 'mRNA' > significant_qtl/F.vesca/Hawaii4/genes_in_10Kb.gff
-cat significant_qtl/F.vesca/Hawaii4/genes_in_10Kb.gff |  cut -f18 | cut -f1 -d ';' | cut -f2 -d '=' > significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_headers.txt
+bedtools intersect -wao -a significant_qtl/F.vesca/Hawaii4/snp_posns_revision_vesca_v4.gff -b assembly/external/F.vesca/Hawaii4/v4/Fragaria_vesca_v4.0.a1.transcripts.gff3 | grep -w 'mRNA' > significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_revision.gff
+cat significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_revision.gff |  cut -f18 | cut -f1 -d ';' | cut -f2 -d '=' > significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_revision_headers.txt
 
-cat assembly/external/F.vesca/Hawaii4/v4/Fragaria_vesca_v4.0.a1_IRP.tsv | grep -w -f significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_headers.txt > significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_IPR.tsv
+cat assembly/external/F.vesca/Hawaii4/v4/Fragaria_vesca_v4.0.a1_IRP.tsv | grep -w -f significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_revision_headers.txt > significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_revision_IPR.tsv
 ```
 
 ```bash
+
 ProgDir=/home/armita/git_repos/emr_repos/scripts/strawberry_substrate_QTL/scripts
-$ProgDir/probes2iprtable.py --sig_qtl significant_qtl/All_Significant_QTLhkBF.tsv --gene_intersect significant_qtl/F.vesca/Hawaii4/genes_in_10Kb.gff --ipr significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_IPR.tsv > significant_qtl/F.vesca/Hawaii4/annotated_genes_in_10Kb_IPR.tsv
+# $ProgDir/probes2iprtable.py --sig_qtl significant_qtl/All_Significant_QTLhkBF.tsv --gene_intersect significant_qtl/F.vesca/Hawaii4/genes_in_10Kb.gff --ipr significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_IPR.tsv > significant_qtl/F.vesca/Hawaii4/annotated_genes_in_10Kb_IPR.tsv
+$ProgDir/probes2iprtable3.py --sig_qtl significant_qtl/all_significant_revision.tsv --gene_intersect significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_revision.gff --ipr significant_qtl/F.vesca/Hawaii4/genes_in_10Kb_IPR.tsv > significant_qtl/F.vesca/Hawaii4/annotated_genes_in_10Kb_revision_IPR.tsv
 ```
 
 # 2. Fruit shape
